@@ -1432,13 +1432,13 @@
     },
     {
       "id": "landsat_8_geomedian",
-      "title": "USGS Landsat-7 Geomedian Datasets",
-      "description": "A collection of Landsat-5 geomedian datasets.",
+      "title": "USGS Landsat-8 Geomedian Datasets",
+      "description": "A collection of Landsat-8 geomedian datasets.",
       "s3_url": "https://s3-uk-1.sa-catapult.co.uk/public-eo-data/common_sensing/fiji/landsat_8_geomedian/",
       "formatting": {
         "date": {
-          "regex": "(\\d{8})",
-          "format": "%Y%m%d"
+          "regex": "(\\d{4}-\\d{2}-\\d{2})",
+          "format": "%Y-%m-%d"
         }
       },
       "providers": [
@@ -1522,7 +1522,7 @@
               "name": "landsat_8_geomedian"
             },
             "eo:platform" : {
-              "name": "landsat_5_geomedian"
+              "name": "landsat_8_geomedian"
             }
           }
         },
