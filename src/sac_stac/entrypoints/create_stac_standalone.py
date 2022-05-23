@@ -10,7 +10,6 @@ from sac_stac.service_layer.services import add_stac_collection
 from sac_stac.load_config import LOG_LEVEL, LOG_FORMAT, get_s3_configuration
 from sac_stac.domain.model import SacCollection
 
-
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -35,12 +34,13 @@ repo = repository.S3Repository(s3)
 
 # Allows for extra functionality - list_objects_v2
 s3_resource = boto3.resource(
-"s3",
-endpoint_url=S3_ENDPOINT,
-region_name=S3_REGION,
-aws_access_key_id=S3_ACCESS_KEY_ID,
-aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+    "s3",
+    endpoint_url=S3_ENDPOINT,
+    region_name=S3_REGION,
+    aws_access_key_id=S3_ACCESS_KEY_ID,
+    aws_secret_access_key=S3_SECRET_ACCESS_KEY,
 )
+
 
 def main():
     # Lists all platforms in the S3 'Directory'
@@ -67,6 +67,7 @@ def main():
 
         except Exception as e:
             logger.error(f"Error adding collection for {platform['Prefix']} :: {e}")
-    
+
+
 if __name__ == '__main__':
     main()
