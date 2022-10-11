@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 
 from geopandas import GeoSeries
@@ -159,14 +160,15 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 proj_shp = [0, 0]
                 proj_tran = [0, 0, 0, 0, 0, 0]
 
-                band_name_in_product_keys = [p for p in product_keys if band_name in p]
+                band_name_in_product_keys = [p for p in product_keys if re.search(band_name, p, re.IGNORECASE)]
 
                 if band_name_in_product_keys:
                     product_key = band_name_in_product_keys[0]
                     asset_href = f"{S3_HREF}/{product_key}"
                     proj_shp, proj_tran = get_projection_from_cog(asset_href)
                 else:
-                    logger.warning(f"{band_name} band not found on {collection.id}/{item.id} acquisition.")
+                    logger.warning(f"No band matching \"{band_name}\" found on {collection.id}/{item.id} acquisition.")
+                    continue  # don't try and add unknown bands
 
                 asset = Asset(
                     href=asset_href,
