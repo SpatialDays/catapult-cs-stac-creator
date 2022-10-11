@@ -216,63 +216,63 @@
           "cloud_cover": 0.0,
           "bands": [
             {
-              "name": "(t2|t1|sr|bt)_band1",
+              "name": "(t2|t1|sr|bt)_b(and)?1",
               "common_name": "coastal",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band2",
+              "name": "(t2|t1|sr|bt)_b(and)?2",
               "common_name": "blue",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band3",
+              "name": "(t2|t1|sr|bt)_b(and)?3",
               "common_name": "green",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band4",
+              "name": "(t2|t1|sr|bt)_b(and)?4",
               "common_name": "red",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band5",
+              "name": "(t2|t1|sr|bt)_b(and)?5",
               "common_name": "nir",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band6",
+              "name": "(t2|t1|sr|bt)_b(and)?6",
               "common_name": "swir16",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band7",
+              "name": "(t2|t1|sr|bt)_b(and)?7",
               "common_name": "swir22",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band10",
+              "name": "(t2|t1|sr|bt)_b(and)?10",
               "common_name": "lwir11",
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
             },
             {
-              "name": "(t2|t1|sr|bt)_band11",
+              "name": "(t2|t1|sr|bt)_b(and)?11",
               "common_name": "lwir12",
               "units": "1",
               "dtype": "uint16",

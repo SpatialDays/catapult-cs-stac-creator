@@ -160,7 +160,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 proj_shp = [0, 0]
                 proj_tran = [0, 0, 0, 0, 0, 0]
 
-                band_name_in_product_keys = [p for p in product_keys if re.search(band_name, p)]
+                band_name_in_product_keys = [p for p in product_keys if re.search(band_name, p, re.IGNORECASE)]
 
                 if band_name_in_product_keys:
                     product_key = band_name_in_product_keys[0]
