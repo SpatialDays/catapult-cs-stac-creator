@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+from shapely.geometry import Polygon
 from pathlib import Path
 
 from geopandas import GeoSeries
@@ -140,8 +141,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
             item = SacItem(
                 id=Path(acquisition_key).name,
                 datetime=date,
-                geometry=json.loads(GeoSeries([geometry], crs=crs).to_crs(GENERIC_EPSG).to_json()).get('features')[0].get(
-                    'geometry'),
+                geometry=create_geom(geometry, crs).get('features')[0].get('geometry'),
                 bbox=list(geometry.bounds),
                 properties={}
             )
@@ -224,3 +224,13 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
     except NoObjectError as e:
         logger.error(f"Could not find object in S3: {e}")
         return 'item', None
+
+
+def create_geom(geometry, crs):
+
+    if isinstance(geometry, Polygon):
+        poly = GeoSeries([geometry.exterior], crs=crs).to_crs(GENERIC_EPSG).to_json()
+    else:
+        poly = GeoSeries([geometry], crs=crs).to_crs(GENERIC_EPSG).to_json()
+    result = json.loads(poly)
+    return result
