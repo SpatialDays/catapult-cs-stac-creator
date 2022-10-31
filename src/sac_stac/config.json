@@ -279,7 +279,7 @@
               "nodata": 0
             },
             {
-              "name": "pixel_qa",
+              "name": "(pixel_qa|qa_pixel)",
               "common_name": "pixel_qa",
               "units": "1",
               "dtype": "uint16",
