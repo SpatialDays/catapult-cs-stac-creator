@@ -229,9 +229,11 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
 def create_geom(geometry, crs):
 
     if isinstance(geometry, Polygon):
-        poly = GeoSeries([Polygon(geometry.exterior)], crs=crs).to_crs(GENERIC_EPSG).to_json()
+        poly = GeoSeries([geometry.exterior], crs=crs).to_crs(GENERIC_EPSG).to_json()
         result = json.loads(poly)
-        return result.get('features')[0].get('geometry')
+        geom = result.get('features')[0].get('geometry')
+        geom['type'] = 'Polygon'
+        return geom
     else:
         poly = GeoSeries([geometry], crs=crs).to_crs(GENERIC_EPSG).to_json()
         result = json.loads(poly)
