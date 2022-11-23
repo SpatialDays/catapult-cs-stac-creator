@@ -4,14 +4,17 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Tuple
-
+from sac_stac.adapters.repository import S3Repository
 import rasterio
 from rasterio import RasterioIOError
 from rasterio.crs import CRS
 from shapely.geometry import box, Polygon
 
 from sac_stac.load_config import LOG_LEVEL, LOG_FORMAT
+from sac_stac.load_config import get_s3_configuration
+
 from sac_stac.util import extract_common_prefix, parse_s3_url
+S3_BUCKET = get_s3_configuration()["bucket"]
 
 logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
 
@@ -38,7 +41,7 @@ def obtain_date_from_filename(file: str, regex: str, date_format: str) -> dateti
     return date
 
 
-def get_geometry_from_cog(cog_url: str) -> Tuple[Polygon, CRS]:
+def get_geometry_from_cog(cog_url: str = None, cog_key:str = None, s3_repository:S3Repository = None) -> Tuple[Polygon, CRS]:
     """
     Extract geometry information out of the COG file served under
     the given url.
@@ -50,17 +53,25 @@ def get_geometry_from_cog(cog_url: str) -> Tuple[Polygon, CRS]:
     if os.environ.get("TEST_ENV"):
         bucket, key = parse_s3_url(cog_url)
         cog_url = f"tests/data/{key}"
+    logging.info("cog_url: %s", cog_url)
     try:
-        with rasterio.open(cog_url) as ds:
-            geom = box(*ds.bounds)
-            crs = ds.crs
-        return geom, crs
+        if not cog_key:
+            with rasterio.open(cog_url) as ds:
+                geom = box(*ds.bounds)
+                crs = ds.crs
+            return geom, crs
+        else:
+            new_cog_url = s3_repository.sign_file(bucket=S3_BUCKET,key=cog_key)
+            with rasterio.open(new_cog_url) as ds:
+                geom = box(*ds.bounds)
+                crs = ds.crs
+            return geom, crs
     except RasterioIOError as e:
         logger.warning(f"Error extracting geometry from {cog_url}: {e}")
         return Polygon(), CRS()
 
 
-def get_projection_from_cog(cog_url: str) -> Tuple[list, list]:
+def get_projection_from_cog(cog_url: str = None, cog_key:str = None, s3_repository:S3Repository = None) -> Tuple[list, list]:
     """
     Extract projection information out of the COG file served under
     the given url.
@@ -73,8 +84,15 @@ def get_projection_from_cog(cog_url: str) -> Tuple[list, list]:
         bucket, key = parse_s3_url(cog_url)
         cog_url = f"tests/data/{key}"
     try:
-        with rasterio.open(cog_url) as ds:
-            return list(ds.shape), list(ds.transform)
+        if not cog_key:
+            with rasterio.open(cog_url) as ds:
+                return list(ds.shape), list(ds.transform)
+        else:
+            new_cog_url = s3_repository.sign_file(bucket=S3_BUCKET,key=cog_key)
+            with rasterio.open(new_cog_url) as ds:
+                geom = box(*ds.bounds)
+                crs = ds.crs
+            return geom, crs
     except RasterioIOError as e:
         logger.warning(f"Error extracting projection from {cog_url}: {e}")
         return [], []

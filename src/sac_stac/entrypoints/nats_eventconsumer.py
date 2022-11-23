@@ -42,14 +42,22 @@ async def run(nc, repo, loop):
             'collection': add_stac_collection,
             'item': add_stac_item
         }
+        logger.info(f"Handling message - 1")
         message_type = subject.split('.')[1]
+        logger.info(f"message_type {message_type}")
         if message_type in r.keys():
+            logger.info(f"Processing {message_type} message")
             for k, v in r.items():
+                logger.info(f"Processing {k} message")
                 if k in subject:
+                    logger.info(f"Handling message - 2")
+                    logger.info(f"Calling function {v}")
                     stac_type, key = v(repo, data)
+                    logger.info(f"Added {stac_type} {key} to repository")
                     if key:
                         subj = f'stac_indexer.{stac_type}'
                         msg = key.encode()
+                        logger.info(f"Publishing {subj} {msg}")
                         await nc.publish(subj, msg)
                         logger.info(f"Published a message on '{subj}': {msg.decode()}")
 

@@ -21,9 +21,12 @@ logger = logging.getLogger(__name__)
 
 S3_ENDPOINT = get_s3_configuration()["endpoint"]
 S3_BUCKET = get_s3_configuration()["bucket"]
+logging.info(f"Using S3 Bucket: {S3_BUCKET}")
 S3_STAC_KEY = get_s3_configuration()["stac_key"]
 S3_CATALOG_KEY = f"{S3_STAC_KEY}/catalog.json"
-S3_HREF = f"{S3_ENDPOINT}/{S3_BUCKET}"
+# create S3 url from S3_BUCKET and AWS_S3_ENDPOINT
+S3_HREF = f"https://{S3_BUCKET}.{S3_ENDPOINT.replace('https://', '')}"
+logging.info(f"S3 HREF: {S3_HREF}")
 GENERIC_EPSG = 4326
 
 
@@ -100,18 +103,26 @@ def add_stac_collection(repo: S3Repository, sensor_key: str, update_collection_o
 
 
 def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on_item: bool = True):
+    logger.info(f"S3 Repository: {repo}, acquisition_key: {acquisition_key}, update_collection_on_item: {update_collection_on_item}")
     STAC_IO.read_text_method = repo.stac_read_method
+    # logger.info(f"Reading catalog from {S3_CATALOG_KEY}")
+    # sensor_name = acquisition_key.split('/')[-3]
+    # logging.info(f"Sensor name: {sensor_name}")
+    # region = acquisition_key.split('/')[-4]
+    # logging.info(f"Region: {region}")
+    # sample: common_sensing/fiji/landsat_8/LC08_L1TP_072241_20200728
+    region = acquisition_key.split('/')[1]
+    sensor_name = acquisition_key.split('/')[2]
 
-    sensor_name = acquisition_key.split('/')[-3]
-    region = acquisition_key.split('/')[-4]
     collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
+    logger.info(f"Reading collection from {collection_key}")
     logger.debug(f"[Item] Adding {acquisition_key} item to {sensor_name}...")
 
-    try:
+    if True:
         collection_dict = repo.get_dict(bucket=S3_BUCKET, key=collection_key)
         collection = SacCollection.from_dict(collection_dict)
 
-        item_id = acquisition_key.split('/')[-2]
+        item_id = acquisition_key.split('/')[3]
         item_key = f"{S3_STAC_KEY}/{collection.id}/{item_id}/{item_id}.json"
         try:
             repo.get_dict(bucket=S3_BUCKET, key=item_key)
@@ -133,7 +144,12 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                     products_prefix=acquisition_key
                 )
                 product_sample_href = f"{S3_HREF}/{product_sample_key}"
-                geometry, crs = get_geometry_from_cog(product_sample_href)
+                # logging.info(f"Product sample href: {product_sample_href}")
+                # url_with_signature = repo.sign_file(bucket=S3_BUCKET, key=product_sample_key)
+                # logging.info(f"Signature: {url_with_signature}")
+                # logging.info(f"URL with signature: {url_with_signature}")
+                geometry, crs = get_geometry_from_cog(cog_key = product_sample_key, s3_repository = repo)
+                logging.info(f"Geometry: {geometry}, CRS: {crs}")
             except Exception:
                 logger.error(f"No bands found on {acquisition_key} acquisition.")
                 raise
@@ -165,7 +181,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 if band_name_in_product_keys:
                     product_key = band_name_in_product_keys[0]
                     asset_href = f"{S3_HREF}/{product_key}"
-                    proj_shp, proj_tran = get_projection_from_cog(asset_href)
+                    proj_shp, proj_tran = get_projection_from_cog(cog_key = product_key, s3_repository=repo)
                 else:
                     logger.warning(f"No band matching \"{band_name}\" found on {collection.id}/{item.id} acquisition.")
                     continue  # don't try and add unknown bands
@@ -213,17 +229,17 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
 
         return 'item', item_key
 
-    except TypeError:
-        logger.error(f"Invalid collection in {collection_key}, "
-                     f"could not add {acquisition_key}.")
-        return 'item', None
-    except KeyError:
-        logger.error(f"No collection found in {collection_key},"
-                     f"could not add {acquisition_key}.")
-        return 'item', None
-    except NoObjectError as e:
-        logger.error(f"Could not find object in S3: {e}")
-        return 'item', None
+    # except TypeError:
+    #     logger.error(f"Invalid collection in {collection_key}, "
+    #                  f"could not add {acquisition_key}.")
+    #     return 'item', None
+    # except KeyError:
+    #     logger.error(f"No collection found in {collection_key},"
+    #                  f"could not add {acquisition_key}.")
+    #     return 'item', None
+    # except NoObjectError as e:
+    #     logger.error(f"Could not find object in S3: {e}")
+    #     return 'item', None
 
 
 def create_geom(geometry, crs):

@@ -18,10 +18,10 @@ def get_nats_uri():
 
 
 def get_s3_configuration():
-    key_id = os.environ.get("S3_ACCESS_KEY_ID", None)
-    access_key = os.environ.get("S3_SECRET_ACCESS_KEY", None)
-    region = os.environ.get("S3_REGION", 'us-east-1')
-    endpoint = os.environ.get("S3_ENDPOINT", 'https://s3-uk-1.sa-catapult.co.uk')
+    key_id = os.environ.get("AWS_ACCESS_KEY_ID", None)
+    access_key = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
+    region = os.environ.get("AWS_DEFAULT_REGION", 'eu-west-2')
+    endpoint = os.environ.get("AWS_S3_ENDPOINT", 'https://s3-uk-1.sa-catapult.co.uk')
     bucket = os.environ.get("S3_BUCKET", 'public-eo-data')
     stac_key = os.environ.get("S3_STAC_KEY", 'stac_catalogs/cs_stac')
     return dict(key_id=key_id, access_key=access_key, region=region,
