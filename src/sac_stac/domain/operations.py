@@ -90,9 +90,7 @@ def get_projection_from_cog(cog_url: str = None, cog_key:str = None, s3_reposito
         else:
             new_cog_url = s3_repository.sign_file(bucket=S3_BUCKET,key=cog_key)
             with rasterio.open(new_cog_url) as ds:
-                geom = box(*ds.bounds)
-                crs = ds.crs
-            return geom, crs
+                return list(ds.shape), list(ds.transform)
     except RasterioIOError as e:
         logger.warning(f"Error extracting projection from {cog_url}: {e}")
         return [], []

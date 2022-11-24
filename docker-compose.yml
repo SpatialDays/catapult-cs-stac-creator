@@ -6,17 +6,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: sac-stac
-    depends_on:
-      - nats
+    image: cs-stac-creator
+    network_mode: "host"
     environment:
-      - NATS_HOST=nats
+      - NATS_HOST=127.0.0.1
       - PYTHONDONTWRITEBYTECODE=1
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_S3_ENDPOINT=
+      - AWS_DEFAULT_REGION=
+      - S3_BUCKET= 
     volumes:
       - ./src:/src
       - ./tests:/tests
-
-  nats:
-    image: nats:alpine
-    ports:
-      - "4222:4222"
+    
