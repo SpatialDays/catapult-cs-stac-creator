@@ -21,11 +21,9 @@ logger = logging.getLogger(__name__)
 
 S3_ENDPOINT = get_s3_configuration()["endpoint"]
 S3_BUCKET = get_s3_configuration()["bucket"]
-logging.info(f"Using S3 Bucket: {S3_BUCKET}")
 S3_STAC_KEY = get_s3_configuration()["stac_key"]
 S3_CATALOG_KEY = f"{S3_STAC_KEY}/catalog.json"
 S3_HREF = f"https://{S3_BUCKET}.{S3_ENDPOINT.replace('https://', '')}"
-logging.info(f"S3 HREF: {S3_HREF}")
 GENERIC_EPSG = 4326
 
 
@@ -110,12 +108,10 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
     sensor_name = acquisition_key.split('/')[2]
 
     collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
-    logger.info(f"Reading collection from {collection_key}")
     logger.debug(f"[Item] Adding {acquisition_key} item to {sensor_name}...")
 
     try:
         collection_dict = repo.get_dict(bucket=S3_BUCKET, key=collection_key)
-        logging.info(f"Collection dict: {collection_dict}")
         collection = SacCollection.from_dict(collection_dict)
 
         item_id = acquisition_key.split('/')[3]
@@ -140,7 +136,6 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                     products_prefix=acquisition_key
                 )
                 geometry, crs = get_geometry_from_cog(cog_key=product_sample_key, s3_repository=repo)
-                logging.info(f"Geometry: {geometry}, CRS: {crs}")
             except Exception:
                 logger.error(f"No bands found on {acquisition_key} acquisition.")
                 raise

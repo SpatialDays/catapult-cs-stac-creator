@@ -53,7 +53,6 @@ def get_geometry_from_cog(cog_url: str = None, cog_key:str = None, s3_repository
     if os.environ.get("TEST_ENV"):
         bucket, key = parse_s3_url(cog_url)
         cog_url = f"tests/data/{key}"
-    logging.info("cog_url: %s", cog_url)
     try:
         if not cog_key:
             with rasterio.open(cog_url) as ds:

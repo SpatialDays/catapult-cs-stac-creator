@@ -29,14 +29,8 @@ class S3Repository:
         return [p.key for p in product_objs]
 
     def get_smallest_product_key(self, bucket: str, products_prefix: str) -> str:
-        # log the input parameters
-        logging.info(f"bucket: {bucket}")
-        logging.info(f"products_prefix: {products_prefix}")
-
         try:
-            logging.info(f"Listing objects in bucket {bucket} with prefix {products_prefix}")
             product_objs = self.s3.list_objects(bucket_name=bucket, prefix=products_prefix, suffix='.tif')
-            logging.info(f"Found {len(product_objs)} objects")
             product_objs_size = {p.size: p.key for p in product_objs if p.size > 1}
             product_min_size = min(list(product_objs_size.keys()))
             return product_objs_size.get(product_min_size)
@@ -63,7 +57,6 @@ class S3Repository:
 
     def stac_read_method(self, uri):
         parsed = urlparse(uri)
-        logging.info(f"parsed: {parsed}")
         try:
             key = parsed.path[1:]
             body = self.s3.get_object_body(bucket_name=S3_BUCKET, object_name=key)

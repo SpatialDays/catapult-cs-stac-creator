@@ -66,7 +66,6 @@ class S3:
             bucket_name            (str): Bucket name
             object_name            (str): Object name
         """
-        logging.info(f"Getting object body for {object_name} in {bucket_name} bucket")
         try:
             obj = self.s3_resource.Object(bucket_name=bucket_name, key=object_name).get()
             return obj.get('Body').read()
