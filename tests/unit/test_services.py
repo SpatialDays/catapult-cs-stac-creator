@@ -1,5 +1,6 @@
 import os
 import shutil
+import json
 from pathlib import Path
 
 from moto.s3 import mock_s3
@@ -75,6 +76,9 @@ def test_add_stac_item():
 
         assert stac_type == 'item'
         assert item_key == 'stac_catalogs/cs_stac/landsat_5/LT05_L1TP_075073_19920125/LT05_L1TP_075073_19920125.json'
+        item_file = open("LT05_L1TP_075073_19920125.json", "wt")
+        item_file.write(json.dumps(repo.get_dict('public-eo-data', item_key)))
+        item_file.close()
     finally:
         shutil.rmtree(f'tests/data/{acquisition_key}')
         os.environ.pop("TEST_ENV")

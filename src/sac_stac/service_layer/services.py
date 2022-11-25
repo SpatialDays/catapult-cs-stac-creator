@@ -141,7 +141,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
             item = SacItem(
                 id=Path(acquisition_key).name,
                 datetime=date,
-                geometry=create_geom(geometry, crs).get('features')[0].get('geometry'),
+                geometry=create_geom(geometry, crs),
                 bbox=list(geometry.bounds),
                 properties={}
             )
@@ -230,7 +230,12 @@ def create_geom(geometry, crs):
 
     if isinstance(geometry, Polygon):
         poly = GeoSeries([geometry.exterior], crs=crs).to_crs(GENERIC_EPSG).to_json()
+        result = json.loads(poly)
+        geom = result.get('features')[0].get('geometry')
+        geom['type'] = 'Polygon'
+        geom["coordinates"] = [geom["coordinates"]]
+        return geom
     else:
         poly = GeoSeries([geometry], crs=crs).to_crs(GENERIC_EPSG).to_json()
-    result = json.loads(poly)
-    return result
+        result = json.loads(poly)
+        return result.get('features')[0].get('geometry')
