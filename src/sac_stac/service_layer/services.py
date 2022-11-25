@@ -233,6 +233,7 @@ def create_geom(geometry, crs):
         result = json.loads(poly)
         geom = result.get('features')[0].get('geometry')
         geom['type'] = 'Polygon'
+        geom["coordinates"] = [geom["coordinates"]]
         return geom
     else:
         poly = GeoSeries([geometry], crs=crs).to_crs(GENERIC_EPSG).to_json()
