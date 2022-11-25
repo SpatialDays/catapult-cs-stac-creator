@@ -9,7 +9,12 @@ from sac_stac.load_config import get_s3_configuration
 from sac_stac.util import parse_s3_url
 
 S3_ENDPOINT = get_s3_configuration()["endpoint"]
+S3_BUCKET = get_s3_configuration()["bucket"]
+import logging
+from sac_stac.load_config import config, LOG_LEVEL, LOG_FORMAT, get_s3_configuration
 
+logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
+logger = logging.getLogger(__name__)
 
 class S3Repository:
 
@@ -52,12 +57,15 @@ class S3Repository:
 
     def stac_read_method(self, uri):
         parsed = urlparse(uri)
-        if parsed.hostname in S3_ENDPOINT:
+        try:
+            key = parsed.path[1:]
+            body = self.s3.get_object_body(bucket_name=S3_BUCKET, object_name=key)
+            return body.decode('utf-8')
+        except:
             try:
-                bucket, key = parse_s3_url(uri)
-                body = self.s3.get_object_body(bucket_name=bucket, object_name=key)
-                return body.decode('utf-8')
-            except NoObjectError:
+                return STAC_IO.default_read_text_method(uri)
+            except:
                 raise
-        else:
-            return STAC_IO.default_read_text_method(uri)
+
+    def sign_file(self, bucket: str, key: str):
+        return self.s3.create_presigned_url(bucket, key)

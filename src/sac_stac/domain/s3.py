@@ -23,11 +23,11 @@ class S3:
         """
         self.s3_resource = boto3.resource(
             "s3",
-            endpoint_url=s3_endpoint,
-            verify=False,
-            region_name=region_name,
-            aws_access_key_id=key,
-            aws_secret_access_key=secret,
+            # endpoint_url=s3_endpoint,
+            # # verify=False,
+            # region_name=region_name,
+            # aws_access_key_id=key,
+            # aws_secret_access_key=secret,
         )
         self.buckets_exist = []
 
@@ -47,7 +47,7 @@ class S3:
             An iterable of ObjectSummary resources
         """
         paginator = self.s3_resource.meta.client.get_paginator('list_objects_v2')
-        pages = paginator.paginate(Bucket="public-eo-data", Prefix=prefix)
+        pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
         
         objects = [self.s3_resource.ObjectSummary(bucket_name, item['Key']) for page in pages for item in page['Contents']]
 
@@ -98,6 +98,13 @@ class S3:
 
         return common_prefixes
 
+    def create_presigned_url(self, bucket_name,key:str):
+        try:
+            response = self.s3_resource.meta.client.generate_presigned_url('get_object', Params={'Bucket': bucket_name, 'Key': key}, ExpiresIn=3600)
+            return response
+        except ClientError as ex:
+            logger.warning(f"Could not create presigned URL for {key}: {ex}")
+            return None
 
 class NoObjectError(Exception):
     pass

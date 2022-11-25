@@ -5,7 +5,7 @@ from shapely.geometry import Polygon
 from pathlib import Path
 
 from geopandas import GeoSeries
-from pystac import Catalog, Extent, SpatialExtent, TemporalExtent, Asset, MediaType, STAC_IO
+from pystac import Catalog, Extent, SpatialExtent, TemporalExtent, Asset, MediaType, STAC_IO, Item, Collection
 from pystac.extensions.eo import Band
 
 from sac_stac.adapters.repository import S3Repository, NoObjectError
@@ -23,7 +23,7 @@ S3_ENDPOINT = get_s3_configuration()["endpoint"]
 S3_BUCKET = get_s3_configuration()["bucket"]
 S3_STAC_KEY = get_s3_configuration()["stac_key"]
 S3_CATALOG_KEY = f"{S3_STAC_KEY}/catalog.json"
-S3_HREF = f"{S3_ENDPOINT}/{S3_BUCKET}"
+S3_HREF = f"https://{S3_BUCKET}.{S3_ENDPOINT.replace('https://', '')}"
 GENERIC_EPSG = 4326
 
 
@@ -92,7 +92,8 @@ def add_stac_collection(repo: S3Repository, sensor_key: str, update_collection_o
                                                  acquisition_prefix=sensor_key)
     for acquisition_key in acquisition_keys:
         try:
-            add_stac_item(repo=repo, acquisition_key=acquisition_key, update_collection_on_item=update_collection_on_item)
+            add_stac_item(repo=repo, acquisition_key=acquisition_key,
+                          update_collection_on_item=update_collection_on_item)
         except Exception as e:
             logger.warning(f"could not add {acquisition_key}: {e}")
 
@@ -100,10 +101,12 @@ def add_stac_collection(repo: S3Repository, sensor_key: str, update_collection_o
 
 
 def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on_item: bool = True):
+    logger.info(
+        f"S3 Repository: {repo}, acquisition_key: {acquisition_key}, update_collection_on_item: {update_collection_on_item}")
     STAC_IO.read_text_method = repo.stac_read_method
+    region = acquisition_key.split('/')[1]
+    sensor_name = acquisition_key.split('/')[2]
 
-    sensor_name = acquisition_key.split('/')[-3]
-    region = acquisition_key.split('/')[-4]
     collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
     logger.debug(f"[Item] Adding {acquisition_key} item to {sensor_name}...")
 
@@ -111,7 +114,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
         collection_dict = repo.get_dict(bucket=S3_BUCKET, key=collection_key)
         collection = SacCollection.from_dict(collection_dict)
 
-        item_id = acquisition_key.split('/')[-2]
+        item_id = acquisition_key.split('/')[3]
         item_key = f"{S3_STAC_KEY}/{collection.id}/{item_id}/{item_id}.json"
         try:
             repo.get_dict(bucket=S3_BUCKET, key=item_key)
@@ -132,8 +135,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                     bucket=S3_BUCKET,
                     products_prefix=acquisition_key
                 )
-                product_sample_href = f"{S3_HREF}/{product_sample_key}"
-                geometry, crs = get_geometry_from_cog(product_sample_href)
+                geometry, crs = get_geometry_from_cog(cog_key=product_sample_key, s3_repository=repo)
             except Exception:
                 logger.error(f"No bands found on {acquisition_key} acquisition.")
                 raise
@@ -148,10 +150,9 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
 
             item.ext.enable('projection')
             item.ext.projection.epsg = GENERIC_EPSG
-    
+
             item.add_extensions(sensor_conf.get('extensions'))
             item.add_common_metadata(sensor_conf.get('common_metadata'))
-
             bands_metadata = sensor_conf.get('extensions').get('eo').get('bands')
             product_keys = repo.get_product_keys(bucket=S3_BUCKET, products_prefix=acquisition_key)
 
@@ -165,19 +166,18 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 if band_name_in_product_keys:
                     product_key = band_name_in_product_keys[0]
                     asset_href = f"{S3_HREF}/{product_key}"
-                    proj_shp, proj_tran = get_projection_from_cog(asset_href)
+                    proj_shp, proj_tran = get_projection_from_cog(cog_key=product_key, s3_repository=repo)
                 else:
                     logger.warning(f"No band matching \"{band_name}\" found on {collection.id}/{item.id} acquisition.")
                     continue  # don't try and add unknown bands
 
                 asset = Asset(
                     href=asset_href,
-                    media_type=MediaType.COG
+                    media_type="image/tiff; application=geotiff; profile=cloud-optimized",
                 )
 
-                # Set Projection
+                item.ext.projection.set_geometry(proj_shp, asset)
                 item.ext.projection.set_transform(proj_tran, asset)
-                item.ext.projection.set_shape(proj_shp, asset)
 
                 # Set bands
                 item.ext.eo.set_bands([Band.create(
@@ -192,24 +192,23 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 item.ext.odc.region_code = get_iso(region)
             
             collection.add_item(item)
-            
+
             if update_collection_on_item:
                 collection.update_extent_from_items()
                 collection.normalize_hrefs(f"{S3_HREF}/{S3_STAC_KEY}/{collection.id}")
-            
+
             repo.add_json_from_dict(
                 bucket=S3_BUCKET,
                 key=collection_key,
                 stac_dict=collection.to_dict()
             )
-                
-            # TODO: Replace STAC_IO.write_text_method
             repo.add_json_from_dict(
                 bucket=S3_BUCKET,
                 key=item_key,
                 stac_dict=item.to_dict()
             )
             logger.info(f"{item.id} item added to {collection.id}")
+
 
         return 'item', item_key
 
@@ -227,7 +226,6 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
 
 
 def create_geom(geometry, crs):
-
     if isinstance(geometry, Polygon):
         poly = GeoSeries([geometry.exterior], crs=crs).to_crs(GENERIC_EPSG).to_json()
         result = json.loads(poly)
