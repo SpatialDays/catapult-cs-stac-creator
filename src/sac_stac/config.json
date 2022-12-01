@@ -286,7 +286,7 @@
               "nodata": 1
             },
             {
-              "name": "radsat_qa",
+              "name": "(radsat_qa|qa_radsat)",
               "common_name": "radsat_qa",
               "units": "1",
               "dtype": "uint16",
