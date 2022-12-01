@@ -176,8 +176,9 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                     media_type="image/tiff; application=geotiff; profile=cloud-optimized",
                 )
 
-                item.ext.projection.set_geometry(proj_shp, asset)
+                # Set Projection
                 item.ext.projection.set_transform(proj_tran, asset)
+                item.ext.projection.set_shape(proj_shp, asset)
 
                 # Set bands
                 item.ext.eo.set_bands([Band.create(
