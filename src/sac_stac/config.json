@@ -291,13 +291,6 @@
               "units": "1",
               "dtype": "uint16",
               "nodata": 0
-            },
-            {
-              "name": "(t2|t1|sr|bt)_aerosol",
-              "common_name": "aerosol",
-              "units": "1",
-              "dtype": "uint16",
-              "nodata": 0
             }
           ]
         },
