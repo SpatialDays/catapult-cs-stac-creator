@@ -14,7 +14,8 @@ config = config_file
 
 def get_nats_uri():
     host = os.environ.get("NATS_HOST", "127.0.0.1")
-    return f"nats://{host}:4222"
+    port = int(os.environ.get("NATS_PORT", "4222"))
+    return f"nats://{host}:{port}"
 
 
 def get_s3_configuration():
