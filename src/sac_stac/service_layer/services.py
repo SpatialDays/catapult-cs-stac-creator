@@ -162,6 +162,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                 proj_tran = [0, 0, 0, 0, 0, 0]
 
                 band_name_in_product_keys = [p for p in product_keys if re.search(band_name, p, re.IGNORECASE)]
+                # logging.info(f"Band name in product keys: {band_name_in_product_keys}")
 
                 if band_name_in_product_keys:
                     product_key = band_name_in_product_keys[0]
@@ -169,7 +170,8 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
                     proj_shp, proj_tran = get_projection_from_cog(cog_key=product_key, s3_repository=repo)
                 else:
                     logger.warning(f"No band matching \"{band_name}\" found on {collection.id}/{item.id} acquisition.")
-                    continue  # don't try and add unknown bands
+                    raise NoObjectError
+                    return
 
                 asset = Asset(
                     href=asset_href,
@@ -223,6 +225,9 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
         return 'item', None
     except NoObjectError as e:
         logger.error(f"Could not find object in S3: {e}")
+        return 'item', None
+    except Exception as e:
+        logger.error(f"Error adding item to collection: {e}")
         return 'item', None
 
 
