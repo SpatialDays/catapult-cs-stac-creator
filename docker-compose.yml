@@ -9,13 +9,14 @@ services:
     image: cs-stac-creator
     network_mode: "host"
     environment:
-      - NATS_HOST=127.0.0.1
+      - NATS_HOST=
+      - NATS_PORT=4222
       - PYTHONDONTWRITEBYTECODE=1
       - AWS_ACCESS_KEY_ID=
       - AWS_SECRET_ACCESS_KEY=
       - AWS_S3_ENDPOINT=
       - AWS_DEFAULT_REGION=
-      - S3_BUCKET= 
+      - S3_BUCKET=
     volumes:
       - ./src:/src
       - ./tests:/tests
