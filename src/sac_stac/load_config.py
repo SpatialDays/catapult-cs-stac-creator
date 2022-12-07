@@ -22,8 +22,8 @@ def get_s3_configuration():
     key_id = os.environ.get("AWS_ACCESS_KEY_ID", '')
     access_key = os.environ.get("AWS_SECRET_ACCESS_KEY", '')
     region = os.environ.get("AWS_DEFAULT_REGION", 'us-east-1')
-    endpoint = os.environ.get("AWS_ENDPOINT_URL", 'https://s3.eu-west-2.amazonaws.com')
-    bucket = os.environ.get("S3_BUCKET", 'public-eo-data')
-    stac_key = os.environ.get("S3_STAC_KEY", 'stac_catalogs/test')
+    endpoint = os.environ.get("AWS_ENDPOINT_URL", '')
+    bucket = os.environ.get("S3_BUCKET", '')
+    stac_key = os.environ.get("S3_STAC_KEY", '')
     return dict(key_id=key_id, access_key=access_key, region=region,
                 endpoint=endpoint, bucket=bucket, stac_key=stac_key)
