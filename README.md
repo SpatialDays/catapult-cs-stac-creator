@@ -6,3 +6,15 @@ This tool is used along [cs-stac-indexer](https://github.com/SatelliteApplicatio
 STAC metadata out of imagery stored in a S3 bucket.
 
 It has been built following the [sac_stac](https://github.com/tjones1993/sac_stac) process.
+
+## Environment Variables
+| Var name| Used for |
+| --- | --- |
+|NATS_HOST | The hostname of the NATS server |
+|NATS_PORT | The port of the NATS server |
+|AWS_ACCESS_KEY_ID | AWS access key |
+|AWS_SECRET_ACCESS_KEY | AWS secret key |
+|S3_ENDPOINT_URL | S3 endpoint url |
+|AWS_DEFAULT_REGION | AWS region |
+|S3_BUCKET | S3 bucket name |
+|S3_STAC_KEY | S3 key where the STAC metadata will be stored |
