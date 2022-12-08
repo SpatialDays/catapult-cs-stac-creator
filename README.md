@@ -15,4 +15,5 @@ STAC metadata out of imagery stored in a S3 bucket.
 |S3_ENDPOINT_URL | S3 endpoint url |
 |AWS_DEFAULT_REGION | AWS region |
 |S3_BUCKET | S3 bucket name |
-|S3_STAC_KEY | S3 key where the STAC metadata will be stored |
+|S3_IMAGERY_PATH | S3 path where the imagery is stored |
+|S3_STAC_PATH | S3 key where the STAC metadata will be stored |

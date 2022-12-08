@@ -50,6 +50,8 @@ spec:
               value: {{ .Values.s3.bucket }}
             - name: S3_STAC_PATH
               value: {{ .Values.s3.stacPath }}
+            - name: S3_IMAGERY_PATH
+              value: {{ .Values.s3.imageryPath }}
             - name: PYTHONWARNINGS
               value: ignore
           resources:

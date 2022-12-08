@@ -17,6 +17,7 @@ services:
       - AWS_DEFAULT_REGION=
       - S3_ENDPOINT=
       - S3_BUCKET=
+      - S3_IMAGERY_PATH=
       - S3_STAC_PATH=
     volumes:
       - ./src:/src

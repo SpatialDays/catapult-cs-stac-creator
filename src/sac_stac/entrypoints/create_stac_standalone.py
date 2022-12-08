@@ -26,6 +26,7 @@ S3_REGION = s3_config["region"]
 S3_ENDPOINT = s3_config["endpoint"]
 S3_BUCKET = s3_config["bucket"]
 S3_STAC_PATH = s3_config["stac_path"]
+S3_IMAGERY_PATH = s3_config["imagery_path"]
 S3_HREF = f"{S3_ENDPOINT}/{S3_BUCKET}"
 
 s3 = S3(key=S3_ACCESS_KEY_ID, secret=S3_SECRET_ACCESS_KEY,
@@ -44,7 +45,7 @@ s3_resource = boto3.resource(
 
 def main():
     # Lists all platforms in the S3 'Directory'
-    platforms = s3_resource.meta.client.list_objects_v2(Bucket=S3_BUCKET, Prefix='common_sensing/fiji/', Delimiter='/')
+    platforms = s3_resource.meta.client.list_objects_v2(Bucket=S3_BUCKET, Prefix=S3_IMAGERY_PATH, Delimiter='/')
     
     # Loops through each platform
     for platform in platforms.get('CommonPrefixes', []):

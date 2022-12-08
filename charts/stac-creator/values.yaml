@@ -72,3 +72,4 @@ s3:
   endpoint: ""
   bucket: ""
   stacPath: ""
+  imageryPath: ""

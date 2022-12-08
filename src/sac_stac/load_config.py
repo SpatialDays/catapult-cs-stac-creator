@@ -24,6 +24,7 @@ def get_s3_configuration():
     region = os.environ.get("AWS_DEFAULT_REGION", 'us-east-1')
     endpoint = os.environ.get("S3_ENDPOINT", '')
     bucket = os.environ.get("S3_BUCKET", '')
+    imagery_path = os.environ.get("S3_IMAGERY_PATH", '')
     stac_path = os.environ.get("S3_STAC_PATH", '')
     return dict(key_id=key_id, access_key=access_key, region=region,
-                endpoint=endpoint, bucket=bucket, stac_path=stac_path)
+                endpoint=endpoint, bucket=bucket, stac_path=stac_path, imagery_path=imagery_path)

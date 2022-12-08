@@ -24,6 +24,9 @@ class S3:
         self.s3_resource = boto3.resource(
             "s3",
             endpoint_url=s3_endpoint,
+            aws_access_key_id=key,
+            aws_secret_access_key=secret,
+            region_name=region_name,
         )
         self.buckets_exist = []
 
