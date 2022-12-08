@@ -59,10 +59,16 @@ tolerations: []
 
 affinity: {}
 
-s3:
-  accessKeyId: secret
-  secretAccessKey: secret
-  endpoint: https://s3-uk-1.sa-catapult.co.uk
-
 nats:
   hostname: nats
+  port: 4222
+
+aws:
+  accessKeyId: ""
+  secretAccessKey: ""
+  region: ""
+
+s3:
+  endpoint: ""
+  bucket: ""
+  stacPath: ""
