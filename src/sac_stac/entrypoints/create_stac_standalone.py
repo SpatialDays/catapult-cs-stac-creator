@@ -25,7 +25,7 @@ S3_SECRET_ACCESS_KEY = s3_config["access_key"]
 S3_REGION = s3_config["region"]
 S3_ENDPOINT = s3_config["endpoint"]
 S3_BUCKET = s3_config["bucket"]
-S3_STAC_KEY = s3_config["stac_key"]
+S3_STAC_PATH = s3_config["stac_path"]
 S3_HREF = f"{S3_ENDPOINT}/{S3_BUCKET}"
 
 s3 = S3(key=S3_ACCESS_KEY_ID, secret=S3_SECRET_ACCESS_KEY,
@@ -53,11 +53,11 @@ def main():
             add_stac_collection(repo=repo, sensor_key=platform['Prefix'], update_collection_on_item=False)
 
             # Update Collection
-            collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
+            collection_key = f"{S3_STAC_PATH}/{sensor_name}/collection.json"
             collection_dict = repo.get_dict(bucket=S3_BUCKET, key=collection_key)
             collection = SacCollection.from_dict(collection_dict)
             collection.update_extent_from_items()
-            collection.normalize_hrefs(f"{S3_HREF}/{S3_STAC_KEY}/{collection.id}")
+            collection.normalize_hrefs(f"{S3_HREF}/{S3_STAC_PATH}/{collection.id}")
             
             repo.add_json_from_dict(
                 bucket=S3_BUCKET,

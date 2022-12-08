@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 S3_ENDPOINT = get_s3_configuration()["endpoint"]
 S3_BUCKET = get_s3_configuration()["bucket"]
-S3_STAC_KEY = get_s3_configuration()["stac_key"]
-S3_CATALOG_KEY = f"{S3_STAC_KEY}/catalog.json"
+S3_STAC_PATH = get_s3_configuration()["stac_path"]
+S3_CATALOG_KEY = f"{S3_STAC_PATH}/catalog.json"
 S3_HREF = f"https://{S3_BUCKET}.{S3_ENDPOINT.replace('https://', '')}"
 GENERIC_EPSG = 4326
 
@@ -51,7 +51,7 @@ def add_stac_collection(repo: S3Repository, sensor_key: str, update_collection_o
         logger.warning(f"No config found for {sensor_name} sensor")
         return 'collection', None
 
-    collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
+    collection_key = f"{S3_STAC_PATH}/{sensor_name}/collection.json"
     try:
         repo.get_dict(bucket=S3_BUCKET, key=collection_key)
         logger.info(f"Collection {sensor_name} already exists in {collection_key}")
@@ -72,7 +72,7 @@ def add_stac_collection(repo: S3Repository, sensor_key: str, update_collection_o
         )
 
         catalog.add_child(collection)
-        catalog.normalize_hrefs(f"{S3_HREF}/{S3_STAC_KEY}")
+        catalog.normalize_hrefs(f"{S3_HREF}/{S3_STAC_PATH}")
 
         # TODO: Replace STAC_IO.write_text_method
         repo.add_json_from_dict(
@@ -107,7 +107,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
     region = acquisition_key.split('/')[1]
     sensor_name = acquisition_key.split('/')[2]
 
-    collection_key = f"{S3_STAC_KEY}/{sensor_name}/collection.json"
+    collection_key = f"{S3_STAC_PATH}/{sensor_name}/collection.json"
     logger.debug(f"[Item] Adding {acquisition_key} item to {sensor_name}...")
 
     try:
@@ -115,7 +115,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
         collection = SacCollection.from_dict(collection_dict)
 
         item_id = acquisition_key.split('/')[3]
-        item_key = f"{S3_STAC_KEY}/{collection.id}/{item_id}/{item_id}.json"
+        item_key = f"{S3_STAC_PATH}/{collection.id}/{item_id}/{item_id}.json"
         try:
             repo.get_dict(bucket=S3_BUCKET, key=item_key)
             logger.info(f"Item {item_id} already exists in {item_key}")
@@ -198,7 +198,7 @@ def add_stac_item(repo: S3Repository, acquisition_key: str, update_collection_on
 
             if update_collection_on_item:
                 collection.update_extent_from_items()
-                collection.normalize_hrefs(f"{S3_HREF}/{S3_STAC_KEY}/{collection.id}")
+                collection.normalize_hrefs(f"{S3_HREF}/{S3_STAC_PATH}/{collection.id}")
 
             repo.add_json_from_dict(
                 bucket=S3_BUCKET,
