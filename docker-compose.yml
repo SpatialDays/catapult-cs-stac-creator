@@ -22,3 +22,7 @@ services:
     volumes:
       - ./src:/src
       - ./tests:/tests
+  nats:
+    image: nats:alpine
+    ports:
+      - "4222:4222"
