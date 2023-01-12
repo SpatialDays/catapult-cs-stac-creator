@@ -11,6 +11,7 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
+    environment: DOCKERHUB_ENVIRONMENT
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
@@ -36,7 +37,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: satapps/cs-stac-creator:${{ steps.sha.outputs.sha_short }}
+          tags: ivicamaticsd/catapult-cs-stac-creator:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
