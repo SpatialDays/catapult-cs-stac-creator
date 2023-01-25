@@ -19,10 +19,4 @@ services:
       - S3_BUCKET=
       - S3_IMAGERY_PATH=
       - S3_STAC_PATH=
-    volumes:
-      - ./src:/src
-      - ./tests:/tests
-  nats:
-    image: nats:alpine
-    ports:
-      - "4222:4222"
+      
