@@ -1,0 +1,17 @@
+image:
+  repository: ivicamaticsd/catapult-cs-stac-creator
+  tag: latest
+  pullPolicy: Always
+
+nats:
+    host: "nats"
+    port: 4222
+
+s3:
+    accessKeyId: "not-needed-s3-proxy"
+    secretKeyId: "not-needed-s3-proxy"
+    region: "eu-west-2"
+    bucket: "ard-bucket"
+    endpoint: "http://s3-proxy:80"
+    imageryPath: "common_sensing"
+    stacPath: "stac_catalogs/cs_stac"

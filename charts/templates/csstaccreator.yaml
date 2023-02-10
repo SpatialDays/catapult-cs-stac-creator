@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs-stac-creator
+  template:
+    metadata:
+      labels:
+        app: cs-stac-creator
+    spec:
+      containers:
+      - name: cs-stac-creator
+        image: {{ $.Values.image.repository }}:{{ $.Values.image.tag }}
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}        
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: {{ $.Values.s3.accessKeyId | quote }}
+          - name: AWS_SECRET_ACCESS_KEY
+            value: {{ $.Values.s3.secretKeyId | quote }}
+          - name: AWS_DEFAULT_REGION
+            value: {{ $.Values.s3.region | quote }}
+          - name: S3_BUCKET
+            value: {{ $.Values.s3.bucket | quote }}
+          - name: S3_ENDPOINT
+            value: {{ $.Values.s3.endpoint | quote }}
+          - name: S3_IMAGERY_PATH
+            value: {{ $.Values.s3.imageryPath | quote }}
+          - name: S3_STAC_PATH
+            value: {{ $.Values.s3.stacPath | quote }}
+          - name: NATS_HOST
+            value: {{ $.Values.nats.host | quote }}
+          - name: NATS_PORT
+            value: {{ $.Values.nats.port | quote }}

@@ -1,0 +1,7 @@
+type: application
+apiVersion: v2
+
+name: cs-stac-creator
+description: A Helm chart for deploying the CS STAC Creator
+
+version: 1.0.0
