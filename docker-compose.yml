@@ -18,4 +18,5 @@ services:
       - S3_BUCKET=ard-test-bucket
       - S3_IMAGERY_PATH=common_sensing
       - S3_STAC_PATH=stac_catalogs/cs_stac
+      - STORAGE_FQDN=
       

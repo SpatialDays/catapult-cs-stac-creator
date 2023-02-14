@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $.Release.Name }}
+  name: {{ $.Release.Name }}-creator-deploy
 spec:
   replicas: 1
   selector:
@@ -35,3 +35,5 @@ spec:
             value: {{ $.Values.nats.host | quote }}
           - name: NATS_PORT
             value: {{ $.Values.nats.port | quote }}
+          - name: STORAGE_FQDN
+            value: {{ $.Values.storageFullQualifiedDomainName | quote }}
