@@ -2,7 +2,11 @@ name: CI to Docker hub
 
 on:
   push:
-    branches: ["main","master"]
+    branches: ["main","master","dev"]
+
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+ 
 
 jobs:
   main:
@@ -33,7 +37,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ivicamaticsd/catapult-cs-stac-creator:latest
+          tags: ivicamaticsd/catapult-cs-stac-creator:${{ env.BRANCH_NAME }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
