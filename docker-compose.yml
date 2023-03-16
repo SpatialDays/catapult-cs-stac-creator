@@ -11,11 +11,11 @@ services:
     environment:
       - NATS_HOST=localhost
       - NATS_PORT=30001
-      - AWS_ACCESS_KEY_ID=
-      - AWS_SECRET_ACCESS_KEY=
+      - AWS_ACCESS_KEY_ID=not-needed
+      - AWS_SECRET_ACCESS_KEY=not-needed
       - AWS_DEFAULT_REGION=eu-west-2
-      - S3_ENDPOINT=
-      - S3_BUCKET=ard-test-bucket
+      - S3_ENDPOINT=http://localhost:30003
+      - S3_BUCKET=ard-bucket
       - S3_IMAGERY_PATH=common_sensing
       - S3_STAC_PATH=stac_catalogs/cs_stac
       - STORAGE_FQDN=
