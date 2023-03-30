@@ -46,9 +46,9 @@ async def run(nc, repo, loop):
         message_type = subject.split('.')[1]
         logger.info(f"message_type {message_type}")
         if message_type in r.keys():
-            logger.info(f"Processing {message_type} message")
+            logger.info(f"Processing {message_type} message 1")
             for k, v in r.items():
-                logger.info(f"Processing {k} message")
+                logger.info(f"Processing {k} message now")
                 if k in subject:
                     logger.info(f"Handling message - 2")
                     logger.info(f"Calling function {v}")
