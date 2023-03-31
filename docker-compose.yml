@@ -9,8 +9,8 @@ services:
     image: cs-stac-creator
     network_mode: "host"
     environment:
-      - NATS_HOST=localhost
-      - NATS_PORT=30001
+      - REDIS_HOST=localhost
+      - REDIS_PORT=30000
       - AWS_ACCESS_KEY_ID=not-needed
       - AWS_SECRET_ACCESS_KEY=not-needed
       - AWS_DEFAULT_REGION=eu-west-2
