@@ -1,11 +1,13 @@
 image:
   repository: ivicamaticsd/catapult-cs-stac-creator
-  tag: latest
+  tag: dev
   pullPolicy: Always
 
 nats:
-    host: "nats"
+    host: "ha-nats"
     port: 4222
+    itemChannel: "stac_creator.item"
+    collectionChannel: "stac_creator.collection"
 
 s3:
     accessKeyId: "not-needed-s3-proxy"
@@ -15,4 +17,5 @@ s3:
     endpoint: "http://s3-proxy:80"
     imageryPath: "common_sensing"
     stacPath: "stac_catalogs/cs_stac"
-storageFullQualifiedDomainName: "https://cspreprodstrgacc.blob.core.windows.net"
+
+storageFullQualifiedDomainName: "https://testingcommonsensing.blob.core.windows.net"
