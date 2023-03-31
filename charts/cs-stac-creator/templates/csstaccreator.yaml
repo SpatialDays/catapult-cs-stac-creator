@@ -31,9 +31,9 @@ spec:
             value: {{ $.Values.s3.imageryPath | quote }}
           - name: S3_STAC_PATH
             value: {{ $.Values.s3.stacPath | quote }}
-          - name: NATS_HOST
-            value: {{ $.Values.nats.host | quote }}
-          - name: NATS_PORT
-            value: {{ $.Values.nats.port | quote }}
+          - name: REDIS_HOST
+            value: {{ $.Values.redis.host | quote }}
+          - name: REDIS_PORT
+            value: {{ $.Values.redis.port | quote }}
           - name: STORAGE_FQDN
             value: {{ $.Values.storageFullQualifiedDomainName | quote }}
