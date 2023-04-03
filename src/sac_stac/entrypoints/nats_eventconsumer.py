@@ -86,7 +86,7 @@ if __name__ == '__main__':
     redis = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
     REDIS_QUEUE_COLLECTIONS = "stac_creator_collection_list"
-    REDIS_QUEUE_ITEMS = "stac_creator_items_list"
+    REDIS_QUEUE_ITEMS = "stac_creator_item_list"
 
     while True:
         # if you have something in collections, process it first
