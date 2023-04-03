@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     redis = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
-    REDIS_QUEUE_COLLECTIONS = "stac_creator_collections_list"
+    REDIS_QUEUE_COLLECTIONS = "stac_creator_collection_list"
     REDIS_QUEUE_ITEMS = "stac_creator_items_list"
 
     while True:
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         while redis.llen(REDIS_QUEUE_COLLECTIONS) > 0:
             data = redis.lpop(REDIS_QUEUE_COLLECTIONS)
             data = data.decode()
-            logger.info(f"Received a message on stac_creator_collections_list: {data}")
+            logger.info(f"Received a message on stac_creator_collection_list: {data}")
             _, key = add_stac_collection(repo, str(data))
             if key:
                 msg = key.encode()
